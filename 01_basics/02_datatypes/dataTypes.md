@@ -266,3 +266,78 @@ console.log(obj2.naam)   // "Ali"
 ```
 
 ------------
+
+
+<br>
+
+
+### Function internals:
+Aapka confusion bilkul valid hai! JavaScript seekhte waqt yeh cheez bohot ajeeb lagti hai kyunki hum aksar functions ko sirf code execute karne ke liye dekhte hain.
+Aap ne parameters/arguments isliye nahi dekhe kyunki greet.language koi function argument nahi hai, balki yeh ek object property hai.
+## Yeh Kaise Kaam Kar Raha Hai?
+JavaScript mein functions asal mein hidden objects hote hain (Objects with callable capabilities).
+Jab aap greet() likhte hain, toh aap function ke andar ka code chalate hain. Lekin jab aap greet.language likhte hain, toh aap us function ko ek normal object ki tarah treat kar rahe hote hain.
+Is cheez ko aasan lafzon mein samajhte hain:
+
+```js
+// JavaScript background mien function ko is tarah dekhta hai:
+greet = {
+  // 1. Ek hidden property hoti hai jo code run karti hai:
+  [[Call]]: function() { return "Hello!"; },
+  
+  // 2. Aur aap is mien naye fields khud se add kar sakte hain:
+  language: "Spanish" 
+};
+```
+
+## Dono mien farq kya hai?
+
+   1. Parameters / Arguments (greet("Urdu")): Yeh function ke andar ka code chalane ke liye data pass karte hain.
+   2. Function Properties (greet.language = "Urdu"): Yeh function ke bahar ek data ka tag lagane ke liye hota hai. Iska function ke andar chalne wale code se koi lena dena nahi hota.
+
+
+### Full Code: 
+```js
+// 1. Define a simple function
+function greet() {
+  return "Hello!";
+}
+
+// 2. Mutate the function by adding a custom property (proving it is non-primitive)
+greet.language = "English";
+
+// 3. Mutate the function by changing that property
+greet.language = "Spanish";
+
+// Verify the changes
+console.log(greet());         // Output: "Hello!"
+console.log(greet.language);  // Output: "Spanish"
+
+```
+
+----------
+
+Aap ka point bilkul sahi hai aur aap bohot bariki se cheezon ko observe kar rahe hain! Aap bilkul theek keh rahe hain ke "Spanish" ki jagah "English" likhne se original string change nahi hui, balki ek naya string assign hua hai.
+Lekin yahan aapko do alag cheezon ko farq kar ke dekhna hoga: Property ke andar ki value (String) aur Function object khud (Greet).
+Aaiye isko clear karte hain:
+## 1. String primitive hai (Aap bilkul sahi hain)
+"Spanish" aur "English" strings hain, aur strings JavaScript mien primitive hote hain. Jab aapne greet.language = "English" likha, toh aapne purane string ko modify nahi kiya, balki language naam ki property ko ek naye string ("English") ki taraf point karwa diya.
+## 2. Lekin Function mutable hai (Main point yeh hai)
+Asal saboot function ke non-primitive (mutable) hone ka yeh nahi hai ke string change hui ya nahi. Asal saboot yeh hai ke aap greet function ke andar koi nayi property add ya change kar pa rahe hain.
+Agar greet ek primitive data type hota (jaise ek normal string ya number), toh aap uske sath aisa dot . laga kar property add hi nahi kar sakte the.
+Is farq ko is code se samajhein:
+
+```js
+// --- Case 1: Primitive Type (String) ---let name = "Ali";
+name.age = 25;          // JavaScript yahan naye property add nahi karne dega
+console.log(name.age);  // Output: undefined (Kyunki primitive immutable hote hain)
+// --- Case 2: Non-Primitive Type (Function) ---function greet() { return "Hey!"; }
+greet.age = 25;         // JavaScript ne property add karne di!
+console.log(greet.age); // Output: 25 (Kyunki function ek object hai, mutable hai)
+```
+
+## Summary
+
+* "Spanish" se "English" hona: Yeh string ka naye value ko point karna hai (Primitive behavior).
+* greet ke andar language naam ka box paida hona: Yeh function ka apna behavior hai (Non-primitive / Mutable behavior). Humne pure function ko delete karke naya function nahi banaya, balki chalte hue function ke andar ek naya badlao (mutation) kiya hai.
+
